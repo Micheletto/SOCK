@@ -1,0 +1,13 @@
+Rpm ${MREPO_URL}/RPMS.os/setup-2.8.14-13.el6.noarch.rpm
+Rpm ${MREPO_URL}/RPMS.os/filesystem-2.4.30-3.el6.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.os/basesystem-10.0-4.el6.noarch.rpm
+Rpm ${MREPO_URL}/RPMS.os/ncurses-base-5.7-3.20090208.el6.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.os/libgcc-4.4.6-3.el6.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.all/tzdata-2012b-3.el6.noarch.rpm
+Rpm ${MREPO_URL}/RPMS.all/glibc-common-2.12-1.47.el6_2.9.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.os/libattr-2.4.44-7.el6.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.os/libcap-2.16-5.5.el6.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.os/nss-softokn-freebl-3.12.9-11.el6.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.os/ncurses-libs-5.7-3.20090208.el6.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.all/glibc-2.12-1.47.el6_2.9.x86_64.rpm
+Rpm ${MREPO_URL}/RPMS.os/bash-4.1.2-8.el6.x86_64.rpm

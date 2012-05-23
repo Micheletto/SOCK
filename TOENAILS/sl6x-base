@@ -1,0 +1,15 @@
+SL_BASE=sl-release-6.2-1.1.x86_64
+
+# Base SOCK_DIR to initialize.
+Base ${SOCK_DIR}
+
+# Get sl6-release
+Rpm ${MREPO_URL}/RPMS.os/${SL_BASE}.rpm
+
+# Import GPG Keys
+GpgImport ${MREPO_URL}/disc1/RPM-GPG-KEY-cern
+GpgImport ${MREPO_URL}/disc1/RPM-GPG-KEY-sl
+GpgImport ${MREPO_URL}/disc1/RPM-GPG-KEY-sl3
+GpgImport ${MREPO_URL}/disc1/RPM-GPG-KEY-sl4
+GpgImport ${MREPO_URL}/disc1/RPM-GPG-KEY-sl5
+GpgImport ${MREPO_URL}/disc1/RPM-GPG-KEY-sl6

@@ -1,0 +1,5 @@
+# Create the standard devices for the chroot
+# Mknod TYPE MAJOR MINOR NAME
+Mknod c 1 3 null
+Mknod c 1 5 zero
+Mknod c 1 8 random

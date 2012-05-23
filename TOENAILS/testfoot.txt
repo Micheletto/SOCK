@@ -1,0 +1,27 @@
+# The yum configuration file for our mrepo
+REPO_FILE=yum.d/sl62.mrepo
+SOCK_DIR=/var/sl62-base
+PACKAGE=sock-test
+VERSION=1.2
+RELEASE=1.0
+
+# Scientific Linux mrepo URL
+MREPO_URL=http://mrepo.YOURMREPOHOST/sl-62-x86_64
+
+# Include these first
+Include TOENAILS/sl6x-base
+Include TOENAILS/standard-devs
+Include TOENAILS/glibc-2.12-1.47-sl6x
+
+# Group
+# GID NAME
+GroupAdd 353 appgrp
+
+# User
+# UID GID HOMEDIR SHELL NAME
+UserAdd 300 353 /home/appuser /bin/sh appuser
+Gecos appuser Application XYZ User
+
+# Symbolic Links
+# SOURCE TARGET (without SOCK_DIR)
+Symlink /var/test var/test

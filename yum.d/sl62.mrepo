@@ -1,0 +1,27 @@
+[sl-dist]
+name=Scientific Linux $releasever - $basearch
+baseurl=http://mrepo.YOURMREPOHOST/mrepo/sl-62-x86_64/RPMS.os/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl6 file:///etc/pki/rpm-gpg/RPM-GPG-KEY-cern
+     
+[sl-updates]
+name=Scientific Linux $releasever - $basearch
+baseurl=http://mrepo.YOURMREPOHOST/mrepo/sl-62-x86_64/RPMS.updates/
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl6 file:///etc/pki/rpm-gpg/RPM-GPG-KEY-cern
+     
+[sl-security]
+name=Scientific Linux $releasever - $basearch
+baseurl=http://mrepo.YOURMREPOHOST/mrepo/sl-62-x86_64/RPMS.security/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl6 file:///etc/pki/rpm-gpg/RPM-GPG-KEY-cern
+     
+[sl-fastbugs]
+name=Scientific Linux $releasever - $basearch
+baseurl=http://mrepo.YOURMREPOHOST/mrepo/sl-62-x86_64/RPMS.fastbugs/
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl file:///etc/pki/rpm-gpg/RPM-GPG-KEY-sl6 file:///etc/pki/rpm-gpg/RPM-GPG-KEY-cern 
