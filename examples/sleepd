@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+#
+### BEGIN INIT INFO
+# Provides: sleepd
+# Short-Description: The sleep daemon- sleeps.
+# Description: Probably the most useless daemon of all time.
+### END INIT INFO
+
+# chkconfig: 345 99 99
+# config: /dev/null
+
+# Source function library.
+. /etc/init.d/functions
+
+# Options.
+CHROOT="/var/sl62-base"
+SUSER="appuser"
+SGRP="appgrp"
+LOCKFILE=/var/lock/subsys/sleepd
+
+start() {
+	echo -n $"Starting sleepd: "
+
+	# Synchronize files into SOCK Chroot.
+	if [ -f ${CHROOT}/etc/syncfiles ] ; then
+		rsync --files-from=${CHROOT}/etc/syncfiles -a / ${CHROOT}
+	fi
+
+	# Start worst daemon in world.
+	daemon chroot --userspec=${SUSER}:${SGROUP} ${CHROOT} /usr/sbin/sleepd.sh
+	RETURN=$?
+
+	if [ $RETURN == 0 ] ; then
+		touch $LOCKFILE
+	fi
+
+	echo
+	return $RETURN
+}
+
+stop() {
+	echo -n $"Stopping sleepd: "
+	PID=$(pidof -x sleepd.sh)
+	
+	if [[ ${PID} ]] ; then
+		kill $PID
+	fi
+
+
+	# Clean up sleep 86400 processes
+	SPID=$(ps -ef |grep "sleep 86400" | grep -v grep | awk '{print $2}')
+
+	if [[ ${SPID} ]] ; then
+		kill $SPID
+	fi
+
+	RETURN=$?
+	if [ $RETURN == 0 ] ; then
+		rm $LOCKFILE
+	fi
+
+	return $RETURN
+}
+
+restart() {
+	stop
+	start
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

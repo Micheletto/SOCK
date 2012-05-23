@@ -1,0 +1,2 @@
+# /var/cache/yum dir, mrepo name
+/var/cache/yum/updates,sl-updates
