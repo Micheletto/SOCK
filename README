@@ -1,0 +1,169 @@
+1. SOCK
+	1.a Requirements
+2. TOE
+	2.a TOE NAIL
+	2.b FOOT
+	2.b Configuration options and variables.
+3. SEW
+4. DARN
+5. PAIR
+6. Syslog
+7. Services
+
+1. SOCK - Services Operations Chroot Kit
+
+	SOCK is a set of simple scripts intended to facilitate the creation of
+application specific chroot environments through RPMs under Linux.  SOCK uses
+ yum, RPMs available over HTTP connections, and/or through local files, modular 
+configuration files, and shell scripts to make this happen.
+
+1.a SOCK requires:
+	Linux
+	A yum repository
+	yum
+	yum-tools
+	rpmdevltools
+	fpm -- Effing Package Manager 
+		For building packages. 
+	 	Available at https://github.com/jordansissel/fpm
+
+2. TOE - Taxonomic Operating Environment
+	
+	A TOE is a single modular collection of files, users, devices, symbolic links from the Operating System back into the SOCK, and/or other resources 
+necessary to construct a SOCK.  The TOE is intended to be a fully reproducible
+environment compromised of specific RPM versions, and resources known to work
+with a given application.
+
+2.a TOE NAIL - TOE Notational Assembled Item List
+	A TOE NAIL is sepcification file that defines a given TOE.  See 
+TOENAILS directory for examples.
+
+2.b FOOT - Flexible Organization of TOEs.
+	A Complete series of assembled TOEs ready for packaging.
+
+2.c Configuration Options and Variables
+	TOENAILS are sourced as shell scripts from the sew.sh script.  The 
+configuration options are shell functions that take arguments.  Variables are 
+regular shell variables.
+
+Variables:
+	Since variables are regular shell variables, they are assigned in the 
+same fashion as VARIABLE=VALUE.
+
+REPO_FILE: Location of the yum configuration file.
+MREPO_URL: The URL to prepend to RPMs available over HTTP.
+SOCK_DIR: The location of the SOCK Chroot directory, defaults to /var/deploy.
+VERSION: The version of the SOCK being created.
+RELEASE: The version of the TOENAIL/FOOT.
+PACKAGE: The name to give to the RPM built from the TOENAIL/FOOT.
+
+Configuration Options:
+
+Include FILE: Sources a file, expected to be a TOENAIL.  Warning: It is 
+	possible to create a cyclical Include chain by having two TOENAILS
+	refer to each other, and thereby enter an infinite loop.  Don't do
+	that.
+
+Rpm LOCATION: Installs an RPM into the directory specified by SOCK_DIR from
+	LOCATION argument, which can be a URL or local file.
+
+GroupAdd GID GROUP: Adds a group GROUP with gid GID to SOCK.  Will install
+	Version of shadow-utils defined by shadow-utils TOENAIL into
+	SOCK to do so.
+
+UserAdd UID GID HOMEDIR SHELL NAME: Adds user with uid of UID, gid of GID
+	home directory of HOMEDIR, shell of SHELL, and name of NAME
+	into SOCK.  Also, installs shadow-utils if necessary.
+
+Gecos USER COMMENT ... : Adds comment(s) COMMENT to the user specified by USER.
+
+Mknod TYPE MAJOR MINOR NAME: Creates devices of type TYPE (c or b), with the
+	major and minor numbers specified by MAJOR and MINOR, and with name
+	specified by NAME.  Devices are added into RPM by a %post script. A
+	standard devices TOE NAIL has been created that defines null, zero,
+	and random.
+
+Symlink LINK SOCK_TARGET: Creates a symbolic link that points into the SOCK
+	from the host system where LINK is the symbolic link, and SOCK_TARGET
+	is the location in the SOCK it points to.  Note: It is expected that
+	SOCK_DIR is not prepended to the SOCK_TARGET argument, but that it look
+	like it would from within the SOCK.  In other words, a SOCK_TARGET of
+	var/test would be correctly evaluated to ${SOCK_DIR}/var/test but 
+	a SOCK_TARGET of ${SOCK_DIR}/var/test would be evaluated incorrectly
+	as ${SOCK_DIR}/${SOCK_DIR}/var/test.
+
+3. SEW - SOCK Environment Worker Script
+	A simple shell script that sources a FOOT, or TOENAIL to build a SOCK.
+The script is sew.sh and is located in the bin directory of this dist.  It takes a FOOT or TOENAIL as an argument.
+
+	The sew.sh script works by sourcing the FOOT or TOENAIL files, and
+running the configuration options as shell functions, and otherwise processing 
+shell logic.  When complete, a FOOT or TOENAIL will be checked with TOE-lint to
+ make certain everything is in order before processing, but or the time being 
+make sure that the REPO_FILE and MREPO_URL variables are set, at a minimum.
+
+4. DARN - Distribution Ammendment Rebuild NAIL Script.
+	Attempts to auto-generate a TOENAIL from a SOCK by listing RPMs 
+installed into a given SOCK that are not listed in a given FOOT or
+TOENAIL file, and provide TOENAIL configuration options for them.
+It does this by querying all RPMs, and guessing the correct URL
+by using yum cache.  URLs listed for RPMs are full.
+	
+The darn.sh script takes the following arguments: TOENAIL YUMCONF 
+SOCKDIR, where TOENAIL is the FOOT, or TOENAIL file that contains
+the list of RPMs (or Include configuration options pointing to them),
+YUMCONF is the configuration file for your YUM repository, and SOCK
+is the directory of your chroot.  
+
+	It is important to note that a full yum cache is necessary to find all
+URLs to RPMs, and that some repositories have names that are not reflected in 
+the /var/cache/yum sub-directories.  The etc/mrepogrep.hints file contains hints
+ to matching these to their proper repo names as listed in the yum configuration
+ file in the form: YUMSUBDIRECTORY,REPONAME
+
+	The mrepogrep.pl script, used by darn.sh, queries the sqlite3 data
+base files used by YUM for a given RPM and attempts to match that to a baseurl
+ fromt he YUM configuration file to produce the RPM's URL.
+
+	The sockdiff.pl script, used by darn.sh, lists the RPMs intalled
+in the SOCK that aren't specified by the FOOT or TOENAIL specified in the
+ command line arguments.
+	
+5. PAIR - Package into RPM Script
+	Package assembled SOCK into an RPM or other deliverable.
+
+	The pair.sh script takes the following arguments: FOOT / TOENAIL
+It sources the FOOT and TOENAIL files specified by the Include 
+configuration options, and ignores everything but the following
+functions: Include, Mknod, Symlink
+
+	However, any normal shell logic outside of the configuration options
+will still get executed.
+
+	The Includes are processed to pick up all shell variables, and the
+Mknod and Symlink lines are added to an RPM %post script to be processed with installing the SOCK RPM.  
+
+	An RPM is built with fpm, Effing Package Manager, with a name 
+specified by the PACKAGE variable, and with the version specified by the VERSION
+ variable.  The RPM is put into the current working directory.
+
+6. A note about syslog.
+	One method to allow an application running inside of a chroot to log
+to the host system's syslog daemon, is to log syslog messages through UDP over
+the loop back device.  Not all syslog daemons listen to the loopback interface
+by default, so check to make sure that this is on.  See the syslog.conf lines
+for rsyslog the examples directory for turning it on for that version of 
+syslog, or see your versions documentation.
+	Likewise, not all applications/languages make it simple to log in this
+fashion.  Perl has the capability but must use the setlogsock() option that 
+does not load by default with the Sys::Syslog library.  Ruby's "syslog" doesn't
+appear to, so see the included Lsyslog class in the examples directory.  Python
+has this capability through the SysLogHandler.
+
+7. A note about running a service in a chroot.
+	An example application / service is included in the examples directory
+called sleepd.  It is, most probably, the most useless service ever written.
+However, it illustrates two intersting points: running an application inside of
+a chroot as a specific user and group is easy using the --userspec option to
+chroot.  And using the --files-from option with rsync is a good way synchronize
+some files from the host system into the chroot.
